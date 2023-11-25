@@ -1,0 +1,117 @@
+/* PlayerForm.css */
+
+.start-game-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+  background-image: url("../../public/img/cloudHeader.jpg");
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: none;
+}
+
+.player-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.player-input input {
+  width: 100%;
+  border: none;
+  text-align: center;
+  color: #1899d6;
+  text-transform: capitalize;
+}
+
+.color-selection {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.color-option {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+}
+
+.color-option.unavailable {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.color-option.selected {
+  filter: brightness(70%); /* Adjust the level of darkness here */
+}
+
+.red {
+  background-color: red;
+}
+
+.blue {
+  background-color: blue;
+}
+
+.green {
+  background-color: green;
+}
+
+.yellow {
+  background-color: yellow;
+}
+
+.error-message {
+  color: red;
+  margin-top: 5px;
+}
+
+.number-selector {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.number-selector select {
+  width: 100%;
+  padding: 5px;
+  text-align: center;
+  border: none;
+  color: #1899d6;
+}
+
+.confirm-button {
+  background-color: #1899d6;
+  border: none;
+  border-radius: 16px;
+  color: #ffffff;
+  cursor: pointer;
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  line-height: 20px;
+  margin: 15px auto;
+  padding: 13px 19px;
+  text-align: center;
+  text-transform: uppercase;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 10px;
+}
+
+h1 {
+  color: #1899d6;
+  font-family: "Raleway", sans-serif;
+  font-size: 18px;
+  text-align: center;
+  text-transform: uppercase;
+}

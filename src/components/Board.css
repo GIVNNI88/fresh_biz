@@ -1,0 +1,273 @@
+body {
+  margin: 0;
+}
+
+.board-container {
+  position: relative;
+  height: 100vh;
+}
+
+.dice-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  height: 100px; /* Adjust the height as needed */
+  z-index: 1;
+}
+
+.dice {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px; /* Adjust the width for smaller dice */
+  height: 50px; /* Adjust the height for smaller dice */
+  background-color: white;
+  border: 2px solid black;
+  font-weight: bold;
+  font-size: 1.2rem; /* Adjust the font size */
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 10px;
+}
+
+.dice-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.dice-number {
+  font-size: 35px;
+}
+.modal-content {
+  background-color: rgba(255, 255, 255, 0.865);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.stockContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.plusMinusButton {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  font-size: 40px;
+  color: #1899d6;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.stockNumber {
+  font-size: 60px;
+  background-color: transparent;
+  color: #1899d6;
+}
+
+.payButton,
+.dontPayButton {
+  border: none;
+  border-radius: 16px;
+  color: #ffffff;
+  cursor: pointer;
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  line-height: 20px;
+  padding: 13px 19px;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap; /* Prevent button text from wrapping */
+  transition: background-color 0.3s ease; /* Add transition for smooth color change */
+}
+
+/* Add margin specifically for the buttons */
+.payButton {
+  background-color: #1899d6;
+  margin: 0 5px; /* Add margin to separate buttons from each other */
+}
+
+.dontPayButton {
+  background-color: #d61818;
+  margin: 0 5px; /* Add margin to separate buttons from each other */
+}
+
+/* Hover effect for the "Don't Pay" button */
+.dontPayButton:hover {
+  background-color: #ff5a5a; /* Change to red on hover */
+}
+
+.payButton:hover {
+  background-color: #56c2f4; /* Change to red on hover */
+}
+
+h1 {
+  color: #1899d6;
+  font-family: "Raleway", sans-serif;
+  font-size: 18px;
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+p {
+  font-family: "Raleway", sans-serif;
+  color: #1899d6;
+  font-size: 16px;
+  margin: 0;
+}
+
+.button-board-container {
+  position: absolute;
+  top: 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.button-board-container button {
+  display: block;
+  font-size: 1vw;
+  padding: 0.7vw;
+  border: none;
+  border-radius: 16px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.info-button {
+  left: 0.5vw;
+  background-color: #189ad6d5;
+}
+
+.marketState {
+  position: absolute;
+  left: 34.5vw;
+  top: 40%;
+  border: none;
+  color: #ffffff;
+  font-size: 1.8vh;
+  background-color: rgba(255, 255, 255, 0.238);
+  border-radius: 10px;
+  padding: 0.5vw;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 6vw;
+}
+
+.buy-button {
+  background-color: #44ab1bdc;
+}
+
+.buy-stock-button {
+  background-color: #6f1babcc;
+}
+
+.sell-stock-button {
+  background-color: #6f1babcc;
+}
+
+.take-loan-button {
+  background-color: #b9b9b9cc;
+}
+
+.namered {
+  color: rgb(255, 0, 0);
+  font-size: bold;
+  text-transform: uppercase;
+}
+
+.nameblue {
+  color: blue;
+  font-size: bold;
+  text-transform: uppercase;
+}
+
+.namegreen {
+  color: green;
+  font-size: bold;
+  text-transform: uppercase;
+}
+
+.nameyellow {
+  color: yellow;
+  font-size: bold;
+  text-transform: uppercase;
+}
+
+.gameInformation {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+  background-image: url("../../public/img/cloudHeader.jpg");
+  height: 20%;
+}
+
+.playerStats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 20%;
+  height: 90%;
+  background-color: rgb(223, 223, 221);
+  border-radius: 8px;
+}
+.logs {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  width: 70%;
+  height: 90%;
+  background-color: rgb(223, 223, 221);
+  border-radius: 8px;
+  overflow: scroll;
+}
+
+.card-button{
+  width: 200px; 
+  height: 100; 
+  background-color: rgb(76, 117, 161);
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  color: white;
+  cursor: pointer;
+}
