@@ -75,6 +75,18 @@ class Board extends Component {
     return playerIndex;
   };
 
+  storeAnotherTurnInLocalStorage = (anotherTurn) => {
+    localStorage.setItem("anotherTurn", JSON.stringify(anotherTurn));
+  };
+
+  getAnotherTurn = () => {
+    let anotherTurn = JSON.parse(localStorage.getItem("anotherTurn"));
+    if (anotherTurn === null) {
+      anotherTurn = 0;
+    }
+    return anotherTurn;
+  };
+
   saveTilePositionsToLocalStorage = (tilePositions) => {
     localStorage.setItem("tilePositions", JSON.stringify(tilePositions));
   };
@@ -331,16 +343,22 @@ class Board extends Component {
 
   handleRollDice = () => {
     const playerIndexLS = this.getPlayerIndex();
-    let pla = 0;
+    const playerData = this.getPlayerData();
+    const tilePositions = this.getTilePositions();
+
+    let pla = playerIndexLS;
     if (playerIndexLS === 0 && this.state.firstTurn) {
       this.setState({ playerIndex: pla });
     } else {
-      pla = (playerIndexLS + 1) % this.players.length;
+      if (!this.getAnotherTurn()) {
+        pla = (playerIndexLS + 1) % playerData.length;
+      }
+      else{
+        this.storeAnotherTurnInLocalStorage(false)
+      }
     }
-    const tilePositions = this.getTilePositions();
     this.storePlayerIndexInLocalStorage(pla);
 
-    const playerData = this.getPlayerData();
     const currentPlayer = playerData[pla];
 
     const diceRollResult = Math.floor(Math.random() * 6) + 1;
@@ -375,7 +393,7 @@ class Board extends Component {
     const playerIndexLS = this.getPlayerIndex();
     let pla = 0;
     if (playerIndexLS === null) {
-      pla = (this.state.playerIndex + 1) % this.players.length;
+      pla = (this.state.playerIndex + 1) % playerData.length;
     } else {
       pla = playerIndexLS;
     }
@@ -465,9 +483,10 @@ class Board extends Component {
 
   playerMovement = (playerData) => {
     const playerIndexLS = this.getPlayerIndex();
+
     let pla = 0;
     if (playerIndexLS === null) {
-      pla = (this.state.playerIndex + 1) % this.players.length;
+      pla = (this.state.playerIndex + 1) % playerData.length;
     } else {
       pla = playerIndexLS;
     }
@@ -591,6 +610,9 @@ class Board extends Component {
     ) {
       playerData[pla].currentMoney += 1000000;
       console.log(playerData[pla].name, "Received 1000000$ from the bank");
+    } else if (currentTile.ID === 52) {
+      // this.storePlayerIndexInLocalStorage((pla - 1) % playerData.length)
+      this.storeAnotherTurnInLocalStorage(true)
     } else if (currentTile.ID === 50) {
       playerData[pla].currentMoney += 2000000;
       console.log(playerData[pla].name, "Received 2000000$ to the bank");
@@ -677,12 +699,20 @@ class Board extends Component {
       (currentTile.ID === 30 && !this.state.playerChoseToUseFreePass)
     ) {
       Fee = 1000000 * DoubleExpanse;
-      playerData[pla].currentMoney -= Fee;
-      console.log(playerData[pla].name, "Payed", Fee, "$ to the bank");
+      if (playerData[pla].currentMoney - Fee >= 0) {
+        playerData[pla].currentMoney -= Fee;
+        console.log(playerData[pla].name, "Payed", Fee, "$ to the bank");
+      } else {
+        this.removePlayer(playerData, pla);
+      }
     } else if (currentTile.ID === 13 && !this.state.playerChoseToUseFreePass) {
       Fee = 2000000 * DoubleExpanse;
-      playerData[pla].currentMoney -= Fee;
-      console.log(playerData[pla].name, "Payed", Fee, "$ to the bank");
+      if (playerData[pla].currentMoney - Fee >= 0) {
+        playerData[pla].currentMoney -= Fee;
+        console.log(playerData[pla].name, "Payed", Fee, "$ to the bank");
+      } else {
+        this.removePlayer(playerData, pla);
+      }
     } else if (
       (currentTile.ID === 78 && !this.state.playerChoseToUseFreePass) ||
       (currentTile.ID === 8 && !this.state.playerChoseToUseFreePass)
@@ -696,18 +726,70 @@ class Board extends Component {
       });
       totalFees = totalFees * DoubleExpanse;
 
-      playerData[pla].currentMoney -= totalFees;
       if (totalFees === 0) {
         console.log(
           playerData[pla].name,
           "you dont have any businesses so you dont pay any money"
         );
       } else {
-        console.log(playerData[pla].name, " payed ", totalFees, "$");
+        if (playerData[pla].currentMoney - totalFees >= 0) {
+          playerData[pla].currentMoney -= totalFees;
+          console.log(
+            playerData[pla].name,
+            "Payed",
+            totalFees,
+            "$ to the bank"
+          );
+        } else {
+          this.removePlayer(playerData, pla);
+        }
       }
     }
     this.savePlayerDataToLocalStorage(playerData);
     this.setState({ playerChoseToUseFreePass: false });
+  };
+
+  removePlayer = (playerData, pla) => {
+    let tilePositions = this.getTilePositions();
+
+    // Remove player from tilePositions and update tile data
+    Object.values(tilePositions).forEach((tile) => {
+      if (tile.playerID === playerData[pla].id) {
+        tile.playerID = null;
+        tile.isOccupied = false;
+        tile.payFee = null;
+      }
+    });
+
+    // Remove player from playerData array by ID
+    const playerIdToRemove = playerData[pla].id;
+    const updatedPlayerData = playerData.filter(
+      (player) => player.id !== playerIdToRemove
+    );
+
+    // Log the removed player's name
+    const removedPlayer = playerData.find(
+      (player) => player.id === playerIdToRemove
+    );
+    if (removedPlayer) {
+      console.log(`${removedPlayer.name} was removed from the game.`);
+    }
+
+    // Update playerData with the updated array
+    if (updatedPlayerData.length !== playerData.length) {
+      playerData.splice(0, playerData.length, ...updatedPlayerData);
+      this.setState({ players: playerData });
+    }
+
+    // Update state or perform further actions
+    this.storePlayerIndexInLocalStorage((pla - 1) % playerData.length);
+    this.saveTilePositionsToLocalStorage(tilePositions);
+    this.savePlayerDataToLocalStorage(playerData);
+    this.drawBoard();
+
+    if (playerData.length < 2) {
+      this.setState({ showPlayerVictoryModal: true });
+    }
   };
 
   checkPlayerPermission = (
@@ -836,8 +918,7 @@ class Board extends Component {
             console.log(currentPlayer.name, "paid", rent, "$ to", owner.name);
           } else {
             // Handle the case where the player can't afford to pay the rent
-            // You can implement custom logic, such as the player going bankrupt
-            // or selling properties, as needed.
+            this.removePlayer(playerData, pla);
           }
         } else if (owner && owner.id === playerData[pla].id) {
           // If the owner and the current player are the same player,
@@ -878,7 +959,7 @@ class Board extends Component {
     const currentPlayer = playerDataLS[playerIndexLS];
     let cardDid = false;
     if (cardName === "Gift Card") {
-      playerDataLS[playerIndexLS].currentMoney += 1000000;
+      playerDataLS[playerIndexLS].currentMoney += 100000000;
       console.log(
         currentPlayer.name,
         "used",
@@ -1209,6 +1290,7 @@ class Board extends Component {
     }
     this.savePlayerDataToLocalStorage(playerDataLS);
     this.setState({ showPlayerLimousineModal: false });
+    this.drawBoard(false);
   };
 
   removeRandomCard = (currentPlayer) => {
@@ -1293,7 +1375,7 @@ class Board extends Component {
       const cardIndex = playerDataLS[playerIndexLS].card.findIndex(
         (card) => card.name === "Discounted pass"
       );
-      if (cardIndex != -1) {
+      if (cardIndex !== -1) {
         paymentAmount -= 2000000;
         this.removeCardAfterUse(
           playerDataLS,
