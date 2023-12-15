@@ -169,6 +169,11 @@ p {
   background-color: #189ad6d5;
 }
 
+.rules-button{
+  left: 0.5vw;
+  background-color: #d61818d5;
+}
+
 .marketState {
   position: absolute;
   left: 34.5vw;
@@ -261,13 +266,17 @@ p {
   overflow: scroll;
 }
 
+
 .card-button{
-  width: 200px; 
-  height: 100; 
-  background-color: rgb(76, 117, 161);
+  width: 150px; 
+  height: 100px; 
+  background-color: rgb(54, 127, 141);
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 10px;
   color: white;
   cursor: pointer;
+  text-align: center;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  
 }

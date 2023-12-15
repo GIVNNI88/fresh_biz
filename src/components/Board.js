@@ -46,6 +46,8 @@ class Board extends Component {
       showPlayerLimousineModal: false,
       showPlayerRedHeadedModal: false,
       showPlayerVictoryModal: false,
+      showPlayerLoseModal: false,
+      showRulesModal: false,
       showStockCardModal: false,
       selectedBusinessOption: "business1",
       currentTileToBuyBusiness: "",
@@ -73,6 +75,18 @@ class Board extends Component {
       playerIndex = 0;
     }
     return playerIndex;
+  };
+
+  storeLogsInLocalStorage = (pla) => {
+    localStorage.setItem("Logs", JSON.stringify(pla));
+  };
+
+  getLogs = () => {
+    let logs = JSON.parse(localStorage.getItem("Logs"));
+    if (logs === null) {
+      logs = 0;
+    }
+    return logs;
   };
 
   storeAnotherTurnInLocalStorage = (anotherTurn) => {
@@ -352,15 +366,13 @@ class Board extends Component {
     } else {
       if (!this.getAnotherTurn()) {
         pla = (playerIndexLS + 1) % playerData.length;
-      }
-      else{
-        this.storeAnotherTurnInLocalStorage(false)
+      } else {
+        this.storeAnotherTurnInLocalStorage(false);
+        console.log(playerData[pla].name, "קיבל תור נוסף");
       }
     }
     this.storePlayerIndexInLocalStorage(pla);
-
     const currentPlayer = playerData[pla];
-
     const diceRollResult = Math.floor(Math.random() * 6) + 1;
 
     // Set the diceResult for the current player
@@ -609,13 +621,13 @@ class Board extends Component {
       currentTile.ID === 76
     ) {
       playerData[pla].currentMoney += 1000000;
-      console.log(playerData[pla].name, "Received 1000000$ from the bank");
+      console.log(playerData[pla].name, "קיבל 1,000,000₪ מהבנק");
     } else if (currentTile.ID === 52) {
       // this.storePlayerIndexInLocalStorage((pla - 1) % playerData.length)
-      this.storeAnotherTurnInLocalStorage(true)
+      this.storeAnotherTurnInLocalStorage(true);
     } else if (currentTile.ID === 50) {
       playerData[pla].currentMoney += 2000000;
-      console.log(playerData[pla].name, "Received 2000000$ to the bank");
+      console.log(playerData[pla].name, "קיבל 2,000,000₪ מהבנק");
     } else if (
       currentTile.ID === 55 ||
       currentTile.ID === 18 ||
@@ -657,17 +669,9 @@ class Board extends Component {
       });
       playerData[pla].currentMoney += totalFees * Profit;
       if (totalFees * Profit === 0) {
-        console.log(
-          playerData[pla].name,
-          "you dont have any businesses so you dont get any money"
-        );
+        console.log(playerData[pla].name, "אין בבעלותך עסקים, אינך מקבל כסף");
       } else {
-        console.log(
-          playerData[pla].name,
-          " Received ",
-          totalFees * Profit,
-          "$"
-        );
+        console.log(playerData[pla].name, " קיבל ", totalFees * Profit, "₪");
       }
     } else if (
       currentTile.ID === 94 ||
@@ -701,7 +705,7 @@ class Board extends Component {
       Fee = 1000000 * DoubleExpanse;
       if (playerData[pla].currentMoney - Fee >= 0) {
         playerData[pla].currentMoney -= Fee;
-        console.log(playerData[pla].name, "Payed", Fee, "$ to the bank");
+        console.log(playerData[pla].name, "שילם", Fee, "₪ לבנק");
       } else {
         this.removePlayer(playerData, pla);
       }
@@ -709,7 +713,7 @@ class Board extends Component {
       Fee = 2000000 * DoubleExpanse;
       if (playerData[pla].currentMoney - Fee >= 0) {
         playerData[pla].currentMoney -= Fee;
-        console.log(playerData[pla].name, "Payed", Fee, "$ to the bank");
+        console.log(playerData[pla].name, "שילם", Fee, "₪ לבנק");
       } else {
         this.removePlayer(playerData, pla);
       }
@@ -727,19 +731,11 @@ class Board extends Component {
       totalFees = totalFees * DoubleExpanse;
 
       if (totalFees === 0) {
-        console.log(
-          playerData[pla].name,
-          "you dont have any businesses so you dont pay any money"
-        );
+        console.log(playerData[pla].name, "אין בבעלותך עסקים, אינך צריך לשלם");
       } else {
         if (playerData[pla].currentMoney - totalFees >= 0) {
           playerData[pla].currentMoney -= totalFees;
-          console.log(
-            playerData[pla].name,
-            "Payed",
-            totalFees,
-            "$ to the bank"
-          );
+          console.log(playerData[pla].name, "שילם", totalFees, "₪ לבנק");
         } else {
           this.removePlayer(playerData, pla);
         }
@@ -772,7 +768,8 @@ class Board extends Component {
       (player) => player.id === playerIdToRemove
     );
     if (removedPlayer) {
-      console.log(`${removedPlayer.name} was removed from the game.`);
+      console.log(`${removedPlayer.name} הפסיד במשחק`);
+      this.setState({ showPlayerLoseModal: true });
     }
 
     // Update playerData with the updated array
@@ -915,7 +912,7 @@ class Board extends Component {
             if (ownerIndex !== -1) {
               playerData[ownerIndex] = owner;
             }
-            console.log(currentPlayer.name, "paid", rent, "$ to", owner.name);
+            console.log(currentPlayer.name, "שילם", rent, "₪ ל", owner.name);
           } else {
             // Handle the case where the player can't afford to pay the rent
             this.removePlayer(playerData, pla);
@@ -931,7 +928,7 @@ class Board extends Component {
           if (currentPlayerIndex !== -1) {
             playerData[currentPlayerIndex] = playerData[pla];
           }
-          console.log(currentPlayer.name, "received", rent, "$ from rent");
+          console.log(currentPlayer.name, "קיבל", rent, "₪ משכירות");
         }
         this.savePlayerDataToLocalStorage(playerData);
       }
@@ -958,14 +955,9 @@ class Board extends Component {
     const tilePositions = this.getTilePositions();
     const currentPlayer = playerDataLS[playerIndexLS];
     let cardDid = false;
-    if (cardName === "Gift Card") {
-      playerDataLS[playerIndexLS].currentMoney += 100000000;
-      console.log(
-        currentPlayer.name,
-        "used",
-        cardName,
-        "card and got 1,000,000$ from the bank"
-      );
+    if (cardName === "גיפט קארד") {
+      playerDataLS[playerIndexLS].currentMoney += 1000000;
+      console.log(currentPlayer.name, "השתמש ב", cardName, "וקיבל ₪1,000,000");
       cardDid = true;
       this.removeCardAfterUse(
         playerDataLS,
@@ -973,17 +965,12 @@ class Board extends Component {
         cardIdFromClick,
         cardDid
       );
-    } else if (cardName === "Discounted pass") {
-    } else if (cardName === "Limousine") {
+    } else if (cardName === "מעבר מוזל") {
+    } else if (cardName === "לימוזינה") {
       this.drawAvailableTiles(tilePositions, true);
-    } else if (cardName === "Real Estate Profit") {
+    } else if (cardName === "סטארט אפ") {
       playerDataLS[playerIndexLS].currentMoney += 3000000;
-      console.log(
-        currentPlayer.name,
-        "usrd",
-        cardName,
-        "card and got 3,000,000$ from the bank"
-      );
+      console.log(currentPlayer.name, "השתמש ב", cardName, "וקיבל ₪3,000,000");
       cardDid = true;
       this.removeCardAfterUse(
         playerDataLS,
@@ -991,24 +978,14 @@ class Board extends Component {
         cardIdFromClick,
         cardDid
       );
-    } else if (cardName === "Unusual Building Permit") {
+    } else if (cardName === "היתר בנייה חריגה") {
       this.drawAvailableTiles(tilePositions);
-      console.log(
-        currentPlayer.name,
-        "usrd",
-        cardName,
-        "card and built a business"
-      );
-    } else if (cardName === "Realization of assets") {
+      console.log(currentPlayer.name, "השתמש ב", cardName, "והקים עסק");
+    } else if (cardName === "מימוש נכסים") {
       this.drawAvailableTileToSell(tilePositions, playerDataLS, playerIndexLS);
       playerDataLS[playerIndexLS].currentMoney += 500000;
-      console.log(
-        currentPlayer.name,
-        "used",
-        cardName,
-        "card and sold a business"
-      );
-    } else if (cardName === "Collecting Profits") {
+      console.log(currentPlayer.name, "השתמש ב", cardName, "ומכר עסק");
+    } else if (cardName === "איסוף רווחים") {
       let highestProfit = this.collectionProfitsCard(
         playerDataLS,
         playerIndexLS
@@ -1016,11 +993,11 @@ class Board extends Component {
       playerDataLS[playerIndexLS].currentMoney += highestProfit;
       console.log(
         currentPlayer.name,
-        "used",
+        "השתמש ב",
         cardName,
-        "to collect",
+        "ואסף רווחים בשווי",
         highestProfit,
-        "$"
+        "₪"
       );
       cardDid = true;
       this.removeCardAfterUse(
@@ -1029,7 +1006,7 @@ class Board extends Component {
         cardIdFromClick,
         cardDid
       );
-    } else if (cardName === "Bonus") {
+    } else if (cardName === "שכירות מתנה") {
       let highestProfit = this.calculateHighestProfit(
         playerDataLS,
         playerIndexLS
@@ -1038,11 +1015,11 @@ class Board extends Component {
         playerDataLS[playerIndexLS].currentMoney += highestProfit;
         console.log(
           currentPlayer.name,
-          "used",
+          "השתמש ב",
           cardName,
-          "to collect",
+          "ואסף רווח בשווי",
           highestProfit,
-          "$"
+          "₪"
         );
         cardDid = true;
         this.removeCardAfterUse(
@@ -1052,18 +1029,15 @@ class Board extends Component {
           cardDid
         );
       } else {
-        console.log(
-          currentPlayer.name,
-          "you dont have any business to collect profit from"
-        );
+        console.log(currentPlayer.name, "אין בבעלותך עסקים לאסוף מהם רווח");
       }
-    } else if (cardName === "Stock Options") {
+    } else if (cardName === "אופציות") {
       this.setState({ usedCardName: cardName });
       this.setState({ showBuyStocksModal: true });
-    } else if (cardName === "Stock Market") {
+    } else if (cardName === "הבורסה") {
       this.setState({ usedCardName: cardName });
       this.setState({ showStockCardModal: true });
-    } else if (cardName === "Red header exemption") {
+    } else if (cardName === "פתור מכותרת אדומה") {
     }
 
     this.setState({ showPlayerCardsModal: false });
@@ -1077,7 +1051,7 @@ class Board extends Component {
     if (cardDid) {
       if (cardIndex !== -1) {
         playerDataLS[playerIndexLS].card.splice(cardIndex, 1);
-        console.log("Card removed from the player's deck.");
+        console.log("הקלף נזרק מהיד לאחר השימוש");
       }
     }
     this.savePlayerDataToLocalStorage(playerDataLS);
@@ -1092,10 +1066,10 @@ class Board extends Component {
       );
       if (owner && owner.id !== playerData[pla].id) {
         const hasFreePass = currentPlayer.card.some(
-          (card) => card.name === "Free Pass"
+          (card) => card.name === "התחמקות מתשלום"
         );
         const cardIdFrom = currentPlayer.card.find(
-          (card) => card.name === "Free Pass"
+          (card) => card.name === "התחמקות מתשלום"
         );
         if (hasFreePass) {
           this.setState({ showPlayerFreePassModal: true });
@@ -1143,13 +1117,13 @@ class Board extends Component {
     const tilePositions = this.getTilePositions();
 
     if (desiredTileIDs.includes(currentTile.ID)) {
-      // Check if the player has the "Red header exemption" card
+      // Check if the player has the "פתור מכותרת אדומה" card
       const hasFreePass = playerData[pla].card.some(
-        (card) => card.name === "Red header exemption"
+        (card) => card.name === "פתור מכותרת אדומה"
       );
       if (hasFreePass) {
         const cardIdFrom = playerData[pla].card.find(
-          (card) => card.name === "Red header exemption"
+          (card) => card.name === "פתור מכותרת אדומה"
         ).id;
         this.setState({ showPlayerRedHeadedModal: true, cardId: cardIdFrom });
       } else {
@@ -1206,20 +1180,20 @@ class Board extends Component {
       availableCardIds[Math.floor(Math.random() * availableCardIds.length)];
 
     if (
-      this.actionCards[randomKey].name === "Limousine" &&
+      this.actionCards[randomKey].name === "לימוזינה" &&
       limousineAvailable !== true
     ) {
       limousineAvailable = true;
       this.storeIfLimousine(limousineAvailable);
-      console.log(currentPlayer.name, "received a card.");
+      console.log(currentPlayer.name, "קיבל קלף מהחבילה");
       return this.actionCards[randomKey];
     } else if (
-      this.actionCards[randomKey].name === "Limousine" &&
+      this.actionCards[randomKey].name === "לימוזינה" &&
       limousineAvailable === true
     ) {
       return this.getRandomCard();
     } else {
-      console.log(currentPlayer.name, "received a card.");
+      console.log(currentPlayer.name, "קיבל קלף מהחבילה");
       return this.actionCards[randomKey];
     }
   };
@@ -1267,9 +1241,7 @@ class Board extends Component {
       currentPlayer.ifPayedToWorld3 = true;
       cardDid = true;
     } else {
-      console.log(
-        "You cant go to this tile without pay the transport Fee, You dont have enough money to pay"
-      );
+      console.log("אינך יכול לעבור לעיר הבאה, אין לך מספיק כסף לתשלום המעבר");
     }
 
     this.removeCardAfterUse(
@@ -1296,12 +1268,12 @@ class Board extends Component {
   removeRandomCard = (currentPlayer) => {
     const playerCards = currentPlayer.card;
     if (playerCards.length === 0) {
-      console.log(currentPlayer.name, "has no cards to throw.");
+      console.log(currentPlayer.name, "אין בידך קלפים לזרוק");
       return playerCards;
     } else {
       const randomIndex = Math.floor(Math.random() * playerCards.length);
       playerCards.splice(randomIndex, 1);
-      console.log(currentPlayer.name, "thrown a card.");
+      console.log(currentPlayer.name, "זרק קלף מהיד");
       return playerCards;
     }
   };
@@ -1332,10 +1304,7 @@ class Board extends Component {
       }
     });
     if (highestProfit === 0) {
-      console.log(
-        playerDataLS[playerIndexLS].name,
-        "you dont have any businesses"
-      );
+      console.log(playerDataLS[playerIndexLS].name, "אין בבעלותך עסקים");
     }
     return highestProfit;
   };
@@ -1373,7 +1342,7 @@ class Board extends Component {
         paymentAmount = 2000000;
       }
       const cardIndex = playerDataLS[playerIndexLS].card.findIndex(
-        (card) => card.name === "Discounted pass"
+        (card) => card.name === "מעבר מוזל"
       );
       if (cardIndex !== -1) {
         paymentAmount -= 2000000;
@@ -1396,9 +1365,9 @@ class Board extends Component {
       );
       console.log(
         playerDataLS[playerIndexLS].name,
-        "payed",
+        "שילם",
         paymentAmount,
-        "to move to the next world"
+        "₪ לעבור לעיר הבאה"
       );
       this.savePlayerDataToLocalStorage(updatedPlayers);
 
@@ -1445,9 +1414,9 @@ class Board extends Component {
       playerDataLS[playerIndexLS].ifPayedToWorld3 = true; // Update this based on the world logic
       console.log(
         playerDataLS[playerIndexLS].name,
-        "payed",
+        "שילם",
         paymentAmount,
-        "to move to next world"
+        "₪ לעבור לאי"
       );
       this.savePlayerDataToLocalStorage(playerDataLS);
       // Close the modal
@@ -1493,9 +1462,9 @@ class Board extends Component {
       playerDataLS[playerIndexLS].ifPayedIsland = true;
       console.log(
         playerDataLS[playerIndexLS].name,
-        "payed",
+        "שילם",
         paymentAmount,
-        "to move to next world"
+        "₪ לעבור לעיר הבאה"
       );
       this.savePlayerDataToLocalStorage(playerDataLS);
       // Close the modal
@@ -1566,15 +1535,15 @@ class Board extends Component {
         });
       }
     }
-    if (!availableTiles) {
+    if (availableTiles.length>0) {
       this.setState({
         showSellBusinessModal: true,
         availableTiles: availableTiles,
       });
     } else {
-      console.log("You dont have any business to sell");
+      console.log("אין בבעלותך עסקים למכור");
     }
-    this.drawBoard(false);
+
   };
 
   handleSellBusiness = () => {
@@ -1615,7 +1584,7 @@ class Board extends Component {
     // Close the modal after buying
     this.setState({ showSellBusinessModal: false });
 
-    console.log(playerDataLS[playerIndexLS].name, "sold a business for", price);
+    console.log(playerDataLS[playerIndexLS].name, "מכר עסק במחיר", price, "₪");
 
     this.players.forEach((player) => {
       player.hasLanded = false;
@@ -1775,12 +1744,11 @@ class Board extends Component {
       // Log the purchase details
       console.log(
         playerDataLS[playerIndexLS].name,
-        "bought",
-        selectedBusiness,
-        "in",
+        "קנה עסק ב",
         cost,
-        "The Pay Fee is:",
-        currentTile.payFee
+        "₪ השכירות היא:",
+        currentTile.payFee,
+        "₪"
       );
 
       // Reset selected business option to "business1"
@@ -1797,7 +1765,7 @@ class Board extends Component {
     } else {
       console.log(
         playerDataLS[playerIndexLS].name,
-        "you can't buy this business; you don't have enough money or the selected tile is invalid."
+        "אינך יכול לקנות את העסק הזה, אין לך מספיק כסף או שעברת את המכסה"
       );
     }
 
@@ -1870,12 +1838,11 @@ class Board extends Component {
       tilePositions[currentPlayer.location].payFee = whenLanded;
       console.log(
         playerDataLS[playerIndexLS].name,
-        "bought",
-        selectedBusiness,
-        "in",
+      "קנה עסק ב",  
         cost,
-        "The Pay Fee is:",
-        currentTile.payFee
+        "₪ השכירות היא:",
+        currentTile.payFee,
+        "₪"
       );
       canBuy = false;
       this.setState({
@@ -1891,7 +1858,7 @@ class Board extends Component {
     } else {
       console.log(
         playerDataLS[playerIndexLS].name,
-        "you cant buy this buissness dont have enough money"
+        "אינך יכול להקים את העסק אין לך מספיק כסף"
       );
     }
 
@@ -1970,7 +1937,7 @@ class Board extends Component {
     const currentPlayer = playerDataLS[playerIndexLS];
     let cardDid = false;
     let specialPrice = 1;
-    if (this.state.usedCardName === "Stock Options") {
+    if (this.state.usedCardName === "אופציות") {
       specialPrice = 0.5;
     }
     if (selectedStocks > 0) {
@@ -1994,13 +1961,13 @@ class Board extends Component {
           showBuyStocksModal: false,
           showStockCardModal: false,
         });
-        console.log(currentPlayer.name, "bought", selectedStocks, "Stocks");
+        console.log(currentPlayer.name, "קנה", selectedStocks, "מניות");
       } else {
-        console.log(currentPlayer.name, "you dont have enough money");
+        console.log(currentPlayer.name, "אין לך מספיק כסף לקנות את המניות");
       }
     } else {
       // Provide feedback or prevent the user from attempting to purchase more than 2 stocks
-      console.log("Please select between 1 to 2 stocks.");
+      console.log("אפשר לקנות בין 1-2 מניות בלבד");
     }
   };
 
@@ -2013,7 +1980,7 @@ class Board extends Component {
     let cardDid;
     if (selectedStocks > 0) {
       if (playerDataLS[playerIndexLS].stocks < selectedStocks) {
-        console.log("You cant sell more stocks then you have");
+        console.log("אינך יכול למכור עוד מניות");
       } else {
         playerDataLS[playerIndexLS].currentMoney +=
           selectedStocks * this.currentMarketState.stockPrice;
@@ -2030,11 +1997,11 @@ class Board extends Component {
           showSellStocksModal: false,
           showStockCardModal: false,
         });
-        console.log(currentPlayer.name, "sold", selectedStocks, "Stocks");
+        console.log(currentPlayer.name, "מכר", selectedStocks, "מניות");
       }
     } else {
       // Provide feedback or prevent the user from attempting to purchase more than 2 stocks
-      console.log("Please select between 1 to 2 stocks.");
+      console.log("אפשר למכור בין 1-2 מניות בלבד");
     }
   };
 
@@ -2067,7 +2034,7 @@ class Board extends Component {
     ) {
       playerDataLS[playerIndexLS].currentMoney += 900000;
       playerDataLS[playerIndexLS].loans += 1;
-      console.log(playerDataLS[playerIndexLS].name, "took a loan");
+      console.log(playerDataLS[playerIndexLS].name, "לקח הלוואה");
     } else if (
       playerDataLS[playerIndexLS].currentMoney >= 100000 &&
       playerDataLS[playerIndexLS].loans <= 2 &&
@@ -2075,7 +2042,7 @@ class Board extends Component {
     ) {
       playerDataLS[playerIndexLS].currentMoney += 900000;
       playerDataLS[playerIndexLS].loans += 1;
-      console.log(playerDataLS[playerIndexLS].name, "took a loan");
+      console.log(playerDataLS[playerIndexLS].name, "לקח הלוואה");
     } else if (
       playerDataLS[playerIndexLS].currentMoney >= 100000 &&
       playerDataLS[playerIndexLS].loans <= 1
@@ -2083,11 +2050,11 @@ class Board extends Component {
       playerDataLS[playerIndexLS].currentMoney += 900000;
       playerDataLS[playerIndexLS].loans += 1;
 
-      console.log(playerDataLS[playerIndexLS].name, "took a loan");
+      console.log(playerDataLS[playerIndexLS].name, "לקח הלוואה");
     } else {
       console.log(
         playerDataLS[playerIndexLS].name,
-        "you cant take anymore loans"
+        "אינך יכול לקחת עוד הלוואות"
       );
     }
     this.setState({
@@ -2112,7 +2079,7 @@ class Board extends Component {
     ) {
       playerDataLS[playerIndexLS].currentMoney -= 1000000;
       playerDataLS[playerIndexLS].loans -= 1;
-      console.log(playerDataLS[playerIndexLS].name, "returned a loan");
+      console.log(playerDataLS[playerIndexLS].name, "החזיר הלואוה");
       this.setState({
         showReturnLoanModal: false,
       });
@@ -2120,7 +2087,7 @@ class Board extends Component {
     } else {
       console.log(
         playerDataLS[playerIndexLS].name,
-        "you dont have loans or enough money to return the loan"
+        "אינך יכול להחזיר הלוואה, אין לך מספיק כסף"
       );
     }
   };
@@ -2129,6 +2096,13 @@ class Board extends Component {
   togglePlayerInfoModal = () => {
     this.setState((prevState) => ({
       showPlayerInfoModal: !prevState.showPlayerInfoModal,
+    }));
+  };
+
+  //////////////////////Rules///////////////////////////////
+  toggleRulesModal = () => {
+    this.setState((prevState) => ({
+      showRulesModal: !prevState.showRulesModal,
     }));
   };
 
@@ -2160,12 +2134,12 @@ class Board extends Component {
         <div className="button-board-container">
           {/* Button to open the player information modal */}
           <button className="info-button" onClick={this.togglePlayerInfoModal}>
-            Information
+            מידע
           </button>
 
           {/* Button to open the player Buy modal */}
           <button className="buy-button" onClick={this.togglePlayerBuyModal}>
-            Buy Buissness
+            קניית עסק
           </button>
 
           {/* Button to open the player Buy Stock modal */}
@@ -2173,7 +2147,7 @@ class Board extends Component {
             className="buy-stock-button"
             onClick={this.togglePlayerBuyStockModal}
           >
-            Buy Stock
+            קניית מניות
           </button>
 
           {/* Button to open the player Buy Stock modal */}
@@ -2181,15 +2155,7 @@ class Board extends Component {
             className="sell-stock-button"
             onClick={this.togglePlayerSellStockModal}
           >
-            Sell Stock
-          </button>
-
-          {/* Button to open the player Return Loan modal */}
-          <button
-            className="take-loan-button"
-            onClick={this.togglePlayerReturnLoanModal}
-          >
-            Return Loan
+            מכירת מניות
           </button>
 
           {/* Button to open the player Take Loan modal */}
@@ -2197,31 +2163,42 @@ class Board extends Component {
             className="take-loan-button"
             onClick={this.togglePlayerTakeLoanModal}
           >
-            Take Loan
+            לקיחת הלוואה
+          </button>
+          {/* Button to open the player Return Loan modal */}
+          <button
+            className="take-loan-button"
+            onClick={this.togglePlayerReturnLoanModal}
+          >
+            החזרת הלוואה
           </button>
 
           {/* Button to open the player Return Loan modal */}
           <button className="info-button" onClick={this.togglePlayerCardsModal}>
-            Cards
+            קלפים
+          </button>
+          {/* Button to open the player information modal */}
+          <button className="rules-button" onClick={this.toggleRulesModal}>
+            חוקים
           </button>
         </div>
         <div className="marketState">
-          <div style={{ textDecoration: "underline" }}>Market State:</div>
+          <div style={{ textDecoration: "underline" }}>מצב השוק:</div>
           <div>{currentMarketState.description}</div>
-          <div style={{ textDecoration: "underline" }}>Stock Price:</div>
+          <div style={{ textDecoration: "underline" }}>מחיר מנייה:</div>
           <div>{currentMarketState.stockPrice}</div>
         </div>
         <div className="gameInformation">
           <div className="playerStats">
-            <h1>Stats</h1>
-            <p>Player Name : {currentPlayer.name}</p>
-            <p>Current Money : {currentPlayer.currentMoney}$</p>
-            <p>Loans : {currentPlayer.loans}</p>
-            <p>Stocks : {currentPlayer.stocks}</p>
-            <p>Cards: {currentPlayer.card.length}</p>
+            <h1>נתונים</h1>
+            <p>שם השחקן : {currentPlayer.name} </p>
+            <p>מאזן נוכחי : {currentPlayer.currentMoney}₪</p>
+            <p>מספר הלוואות : {currentPlayer.loans}</p>
+            <p>מספר מניות : {currentPlayer.stocks}</p>
+            <p>מספר קלפים : {currentPlayer.card.length}</p>
           </div>
           <div className="logs">
-            <h1>Logs</h1>
+            <h1>מהלכי המשחק</h1>
             <div
               ref={this.logsRef}
               style={{ overflow: "auto", maxHeight: "200px" }}
@@ -2241,7 +2218,7 @@ class Board extends Component {
           overlayClassName="overlay"
         >
           <div className="modal-content">
-            <h1>Player Information</h1>
+            <h1>:מידע שחקנים</h1>
             <br />
             {this.state.showPlayerInfoModal && (
               <div>
@@ -2254,9 +2231,9 @@ class Board extends Component {
                         </span>
                         <br />
                         <br />
-                        Current Money: {player.currentMoney}$
+                        מאזן נוכחי: {player.currentMoney}$
                         <br />
-                        Cards: {player.card.length}
+                        קלפים: {player.card.length}
                         <br />
                         <br />
                       </p>
@@ -2268,6 +2245,20 @@ class Board extends Component {
           </div>
         </Modal>
 
+        {/* Rules Modal */}
+        <Modal
+          isOpen={this.state.showRulesModal}
+          onRequestClose={this.toggleRulesModal}
+          className="modal"
+          overlayClassName="overlay"
+        >
+          <div className="modal-content">
+            <h1>:חוקים</h1>
+            <br />
+            {this.state.showRulesModal && <div></div>}
+          </div>
+        </Modal>
+
         {/* Payment Required Modal */}
         <Modal
           isOpen={this.state.showModal}
@@ -2276,18 +2267,17 @@ class Board extends Component {
           overlayClassName="overlay"
         >
           <div className="modal-content">
-            <h1>Payment Required</h1>
-            <p>Would you like to go to the next world,</p>
-            <p>You Will have to pay 2,000,000$</p>
-            <p>Do you want to pay?</p>
+            <h1>:תשלום מעבר</h1>
+            <p>?האם תרצה לעבור לעיר הבאה</p>
+            <p>תצטרך לשלם 2,000,000₪</p>
             <p>{this.props.modalMessage}</p>{" "}
             {/* Add this line to display the modal message */}
             <div className="button-container">
               <button className="payButton" onClick={() => this.handlePay()}>
-                Pay
+                לתשלום
               </button>
               <button className="dontPayButton" onClick={this.handleNotPay}>
-                Don't Pay
+                ביטול
               </button>
             </div>
           </div>
@@ -2301,22 +2291,21 @@ class Board extends Component {
           overlayClassName="overlay"
         >
           <div className="modal-content">
-            <h1>Payment Required for World 3</h1>
-            <p>Would you like to go to World 3,</p>
-            <p>You Will have to pay 3,000,000$</p>
-            <p>Do you want to pay?</p>
+            <h1>:תשלום מעבר</h1>
+            <p>?האם תרצה לעבור לעיר הבאה</p>
+            <p>תצטרך לשלם 3,000,000₪</p>
             <div className="button-container">
               <button
                 className="payButton"
                 onClick={() => this.handlePayWorld3()}
               >
-                Pay
+                לתשלום
               </button>
               <button
                 className="dontPayButton"
                 onClick={this.handleNotPayWorld3}
               >
-                Don't Pay
+                ביטול
               </button>
             </div>
           </div>
@@ -2330,22 +2319,21 @@ class Board extends Component {
           overlayClassName="overlay"
         >
           <div className="modal-content">
-            <h1>Payment Required for Island</h1>
-            <p>Would you like to go to Island,</p>
-            <p>You Will have to pay 5,000,000$</p>
-            <p>Do you want to pay?</p>
+            <h1>:תשלום מעבר</h1>
+            <p>?האם תרצה לעבור לעיר הבאה</p>
+            <p>תצטרך לשלם 5,000,000₪</p>
             <div className="button-container">
               <button
                 className="payButton"
                 onClick={() => this.handlePayIsland()}
               >
-                Pay
+                לתשלום
               </button>
               <button
                 className="dontPayButton"
                 onClick={this.handleNotPayIsland}
               >
-                Don't Pay
+                ביטול
               </button>
             </div>
           </div>
@@ -2360,8 +2348,8 @@ class Board extends Component {
         >
           {this.state.showBuyBusinessModal && (
             <div className="modal-content">
-              <h1>Open A Business!</h1>
-              <p>Choose a business to buy:</p>
+              <h1>הקמת עסק</h1>
+              <p>:אנא בחר איזה עסק ברצונך להקים</p>
 
               <label>
                 <input
@@ -2371,7 +2359,7 @@ class Board extends Component {
                   onChange={this.handleBusinessOptionChange}
                   checked={this.state.selectedBusinessOption === "business1"} // Check if this option is selected
                 />
-                Business 1 - Cost: $400,000, When Landed: $200,000
+                מחיר הקמה: 400,000₪ - שכירות 200,000₪
               </label>
 
               <label>
@@ -2382,7 +2370,7 @@ class Board extends Component {
                   onChange={this.handleBusinessOptionChange}
                   checked={this.state.selectedBusinessOption === "business2"} // Check if this option is selected
                 />
-                Business 2 - Cost: $1,000,000, When Landed: $400,000
+                מחיר הקמה: 1,000,000₪ - שכירות 400,000₪
               </label>
 
               <label>
@@ -2393,7 +2381,7 @@ class Board extends Component {
                   onChange={this.handleBusinessOptionChange}
                   checked={this.state.selectedBusinessOption === "business3"} // Check if this option is selected
                 />
-                Business 3 - Cost: $2,000,000, When Landed: $600,000
+                מחיר הקמה: 2,000,000₪ - שכירות 600,000₪
               </label>
 
               <label>
@@ -2404,18 +2392,18 @@ class Board extends Component {
                   onChange={this.handleBusinessOptionChange}
                   checked={this.state.selectedBusinessOption === "business4"} // Check if this option is selected
                 />
-                Business 4 - Cost: $3,000,000, When Landed: $800,000
+                מחיר הקמה: 3,000,000₪ - שכירות 800,000₪
               </label>
 
               <div className="button-container">
                 <button className="payButton" onClick={this.handleBuyBusiness}>
-                  Buy Business
+                  לתשלום
                 </button>
                 <button
                   className="dontPayButton"
                   onClick={this.handleNotBuyBusiness}
                 >
-                  Don't Buy
+                  ביטוך
                 </button>
               </div>
             </div>
@@ -2430,30 +2418,30 @@ class Board extends Component {
           overlayClassName="overlay"
         >
           <div className="modal-content">
-            <h1>Sell A Business!</h1>
-            <p>Choose a business you want to sell:</p>
+            <h1>מכירת עסק</h1>
+            <p>אנא בחר איזה עסק תרצה למכור</p>
 
             <select
               value={this.state.selectedTile}
               onChange={this.handleTileSelectChange}
             >
-              <option value="">Select a Tile</option>
+              <option value="">בחר משבצת</option>
               {this.state.availableTiles.map((tile) => (
                 <option key={tile} value={tile}>
-                  Tile {tile}
+                  מספר {tile}
                 </option>
               ))}
             </select>
 
             <div className="button-container">
               <button className="payButton" onClick={this.handleSellBusiness}>
-                Sell
+                למכירה
               </button>
               <button
                 className="dontPayButton"
                 onClick={() => this.setState({ showSellBusinessModal: false })}
               >
-                Don't Sell
+                ביטול
               </button>
             </div>
           </div>
@@ -2469,23 +2457,23 @@ class Board extends Component {
           overlayClassName="overlay"
         >
           <div className="modal-content">
-            <h1>Open A Business!</h1>
+            <h1>הקמת עסק</h1>
 
-            <p>Choose a tile to buy business:</p>
+            <p>אנא בחר משבצת שעליה תרצה להקים עסק</p>
 
             <select
               value={this.state.selectedTile}
               onChange={this.handleTileSelectChange}
             >
-              <option value="">Select a Tile</option>
+              <option value="">בחר משבצת</option>
               {this.state.availableTiles.map((tile) => (
                 <option key={tile} value={tile}>
-                  Tile {tile}
+                  מספר {tile}
                 </option>
               ))}
             </select>
 
-            <p>Choose a business to buy:</p>
+            <p>אנא בחר עסק להקים</p>
 
             <label>
               <input
@@ -2495,7 +2483,7 @@ class Board extends Component {
                 onChange={this.handleBusinessOptionChange}
                 checked={this.state.selectedBusinessOption === "business1"} // Check if this option is selected
               />
-              Business 1 - Cost: $400,000, When Landed: $200,000
+              מחיר הקמה: 400,000₪ - שכירות 200,000₪
             </label>
 
             <label>
@@ -2506,7 +2494,7 @@ class Board extends Component {
                 onChange={this.handleBusinessOptionChange}
                 checked={this.state.selectedBusinessOption === "business2"} // Check if this option is selected
               />
-              Business 2 - Cost: $1,000,000, When Landed: $400,000
+              מחיר הקמה: 1,000,000₪ - שכירות 400,000₪
             </label>
 
             <label>
@@ -2517,7 +2505,7 @@ class Board extends Component {
                 onChange={this.handleBusinessOptionChange}
                 checked={this.state.selectedBusinessOption === "business3"} // Check if this option is selected
               />
-              Business 3 - Cost: $2,000,000, When Landed: $600,000
+              מחיר הקמה: 2,000,000₪ - שכירות 600,000₪
             </label>
 
             <label>
@@ -2528,7 +2516,7 @@ class Board extends Component {
                 onChange={this.handleBusinessOptionChange}
                 checked={this.state.selectedBusinessOption === "business4"} // Check if this option is selected
               />
-              Business 4 - Cost: $3,000,000, When Landed: $800,000
+              מחיר הקמה: 3,000,000₪ - שכירות 800,000₪
             </label>
 
             <div className="button-container">
@@ -2536,7 +2524,7 @@ class Board extends Component {
                 className="payButton"
                 onClick={this.handleBuyBusinessSpecialTile}
               >
-                Buy Business
+                לתשלום
               </button>
               <button
                 className="dontPayButton"
@@ -2544,7 +2532,7 @@ class Board extends Component {
                   this.setState({ showBuyBusinessModalWhereAvailble: false })
                 }
               >
-                Don't Buy
+                ביטול
               </button>
             </div>
           </div>
@@ -2559,8 +2547,8 @@ class Board extends Component {
         >
           {this.state.showBuyStocksModal && (
             <div className="modal-content">
-              <h1>Buy Stocks</h1>
-              <p>How many stocks would you like to buy?</p>
+              <h1>קניית מניות</h1>
+              <p>אנא בחר כמות מניות לקנייה</p>
               <div className="stockContainer">
                 <button
                   className="plusMinusButton"
@@ -2579,13 +2567,13 @@ class Board extends Component {
 
               <div className="button-container">
                 <button className="payButton" onClick={this.handleBuyStock}>
-                  Buy Stocks
+                  לתשלום
                 </button>
                 <button
                   className="dontPayButton"
                   onClick={() => this.setState({ showBuyStocksModal: false })}
                 >
-                  Cancel
+                  ביטול
                 </button>
               </div>
             </div>
@@ -2601,8 +2589,8 @@ class Board extends Component {
         >
           {this.state.showSellStocksModal && (
             <div className="modal-content">
-              <h1>Buy Stocks</h1>
-              <p>How many stocks would you like to sell?</p>
+              <h1>מכירת מניות</h1>
+              <p>אנא בחר מספר מניות למכירה</p>
               <div className="stockContainer">
                 <button
                   className="plusMinusButton"
@@ -2621,13 +2609,13 @@ class Board extends Component {
 
               <div className="button-container">
                 <button className="payButton" onClick={this.handleSellStock}>
-                  Sell Stocks
+                  למכירה
                 </button>
                 <button
                   className="dontPayButton"
                   onClick={() => this.setState({ showSellStocksModal: false })}
                 >
-                  Cancel
+                  ביטול
                 </button>
               </div>
             </div>
@@ -2643,11 +2631,9 @@ class Board extends Component {
         >
           {this.state.showTakeLoanModal && (
             <div className="modal-content">
-              <h1>Take A Loan</h1>
-              <p>Would you like to take a loan?</p>
-              <p>You Will have to pay 100,000$</p>
-              <p>And get a 1,000,000$ Loan</p>
-              <p>Do you agree?</p>
+              <h1>לקיחת הלוואה</h1>
+              <p>על מנת לקחת הלוואה תצטרך לשלם 100,000₪</p>
+              <p>בתמורה תקבל 1,000,000₪</p>
               <p>{this.props.modalMessage}</p>{" "}
               {/* Add this line to display the modal message */}
               <div className="button-container">
@@ -2655,13 +2641,13 @@ class Board extends Component {
                   className="payButton"
                   onClick={() => this.handleTakeLoan()}
                 >
-                  Take
+                  אישור
                 </button>
                 <button
                   className="dontPayButton"
                   onClick={() => this.setState({ showTakeLoanModal: false })}
                 >
-                  Cancel
+                  ביטול
                 </button>
               </div>
             </div>
@@ -2677,10 +2663,8 @@ class Board extends Component {
         >
           {this.state.showReturnLoanModal && (
             <div className="modal-content">
-              <h1>Return A Loan</h1>
-              <p>Would you like to return a loan?</p>
-              <p>You Will have to pay 1,000,000$</p>
-              <p>Do you agree?</p>
+              <h1>החזרת הלוואה</h1>
+              <p>על מנת לסגור הלוואה עליך לשלם 1,000,000₪</p>
               <p>{this.props.modalMessage}</p>{" "}
               {/* Add this line to display the modal message */}
               <div className="button-container">
@@ -2688,13 +2672,13 @@ class Board extends Component {
                   className="payButton"
                   onClick={() => this.handleReturnLoan()}
                 >
-                  Yes
+                  אישור
                 </button>
                 <button
                   className="dontPayButton"
                   onClick={() => this.setState({ showReturnLoanModal: false })}
                 >
-                  No
+                  ביטול
                 </button>
               </div>
             </div>
@@ -2709,7 +2693,10 @@ class Board extends Component {
           overlayClassName="overlay"
         >
           {this.state.showPlayerCardsModal && (
-            <div className="modal-content">
+            <div
+              className="modal-content"
+              style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}
+            >
               {currentPlayer.card.length > 0 ? (
                 currentPlayer.card.map((card, index) => (
                   <button
@@ -2732,7 +2719,7 @@ class Board extends Component {
                 ))
               ) : (
                 <div>
-                  <p>You don't have any cards.</p>
+                  <p>אין ברשותך קלפי פעולה</p>
                 </div>
               )}
             </div>
@@ -2750,20 +2737,20 @@ class Board extends Component {
         >
           {this.state.showPlayerFreePassModal && (
             <div className="modal-content">
-              <h1>FREE PASS</h1>
-              <p>Would you like to use this card</p>
+              <h1>התחמקות מתשלום שכירות</h1>
+              <p>האם ברצונך לא לשלם שכירות בעסק שעליו אתה עומד</p>
               <div className="button-container">
                 <button
                   className="payButton"
                   onClick={() => this.handleFreePass()}
                 >
-                  Yes
+                  אישור
                 </button>
                 <button
                   className="dontPayButton"
                   onClick={() => this.handleNotFreePass()}
                 >
-                  No
+                  ביטול
                 </button>
               </div>
             </div>
@@ -2781,20 +2768,20 @@ class Board extends Component {
         >
           {this.state.showPlayerRedHeadedModal && (
             <div className="modal-content">
-              <h1>Red header exemption</h1>
-              <p>Would you like to use this card</p>
+              <h1>פטור מתשלום בכותרת אדומה</h1>
+              <p>האם ברצונך להתחמק מתשלום על המשבצת שעליה אתה עומד</p>
               <div className="button-container">
                 <button
                   className="payButton"
                   onClick={() => this.handleRedHeaded()}
                 >
-                  Yes
+                  אישור
                 </button>
                 <button
                   className="dontPayButton"
                   onClick={() => this.handleNotRedHeaded()}
                 >
-                  No
+                  ביטול
                 </button>
               </div>
             </div>
@@ -2810,8 +2797,8 @@ class Board extends Component {
         >
           {this.state.showStockCardModal && (
             <div className="modal-content">
-              <h1>Buy Stocks</h1>
-              <p>How many stocks would you like to sell?</p>
+              <h1>קניית/מכירת מניות</h1>
+              <p>אנא בחר כמות</p>
               <div className="stockContainer">
                 <button
                   className="plusMinusButton"
@@ -2830,16 +2817,16 @@ class Board extends Component {
 
               <div className="button-container">
                 <button className="payButton" onClick={this.handleBuyStock}>
-                  Buy Stocks
+                  קניית מניות
                 </button>
                 <button className="payButton" onClick={this.handleSellStock}>
-                  Sell Stocks
+                  מכירת מניות
                 </button>
                 <button
                   className="dontPayButton"
                   onClick={() => this.setState({ showStockCardModal: false })}
                 >
-                  Cancel
+                  ביטול
                 </button>
               </div>
             </div>
@@ -2856,32 +2843,30 @@ class Board extends Component {
           overlayClassName="overlay"
         >
           <div className="modal-content">
-            <h1>Limousine</h1>
-            <p>Choose where you want to go!:</p>
+            <h1>לימוזינה</h1>
+            <p>אנא בחר במשבצת אליה תרצה לעבור</p>
 
             <select
               value={this.state.selectedTile}
               onChange={this.handleTileSelectChange}
             >
-              <option value="">Select a Tile</option>
+              <option value="">בחר משבצת</option>
               {this.state.availableTiles.map((tile) => (
                 <option key={tile} value={tile}>
-                  Tile {tile}
+                  מספר {tile}
                 </option>
               ))}
             </select>
 
             <div className="button-container">
               <button className="payButton" onClick={this.limousineCard}>
-                GO!
+                אישור
               </button>
               <button
                 className="dontPayButton"
-                onClick={() =>
-                  this.setState({ showPlayerLimousineModal: false })
-                }
+                onClick={() => this.storeIfLimousine(false)}
               >
-                Cencel
+                ביטול
               </button>
             </div>
           </div>
@@ -2897,8 +2882,30 @@ class Board extends Component {
           overlayClassName="overlay"
         >
           <div className="modal-content">
-            <h1>CONGRATULATION</h1>
-            <p>YOU ARE THE WINNER!</p>
+            <h1>מזל טוב</h1>
+            <p>!ניצחת במשחק</p>
+          </div>
+        </Modal>
+
+        {/* Modal for Player Lost*/}
+        <Modal
+          isOpen={this.state.showPlayerLoseModal}
+          onRequestClose={() => this.setState({ showPlayerLoseModal: false })}
+          className="modal"
+          overlayClassName="overlay"
+        >
+          <div className="modal-content">
+            <h1>הפסדת</h1>
+            <p>{currentPlayer.name} הוסר מהמשחק</p>
+
+            <div className="button-container">
+              <button
+                className="payButton"
+                onClick={() => this.setState({ showPlayerLoseModal: false })}
+              >
+                המשך
+              </button>
+            </div>
           </div>
         </Modal>
       </div>

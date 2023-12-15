@@ -16,6 +16,7 @@ const PlayerForm = ({ onStartGame }) => {
     green: true,
     yellow: true,
   });
+  let limousineAvailable = false;
 
   const tilesP = {
     96: {
@@ -474,171 +475,171 @@ const PlayerForm = ({ onStartGame }) => {
   const actionCards = {
     1: {
       id: 1,
-      name: "Collecting Profits",
+      name: "איסוף רווחים",
       description:
-        "choose the player with the highest collect profits and get them",
+        "קבל את איסוף הרווחים הכי גבוהה מבין המשתתפים",
     },
     2: {
       id: 2,
-      name: "Free Pass",
-      description: "you dont need to pay the player business rent",
+      name: "התחמקות מתשלום",
+      description: "אינך צריך לשלם שכירות לעסק שעליו אתה עומד",
     },
     3: {
       id: 3,
-      name: "Stock Options",
-      description: "you can buy up to 2 stocks for half the price",
+      name: "אופציות",
+      description: "קנה עד 2 מניות בחצי ממחיר השוק",
     },
     4: {
       id: 4,
-      name: "Bonus",
-      description: "get your the rent on your most profitable business",
+      name: "שכירות מתנה",
+      description: "קבל את השכירות מהעסק הכי רווחי שלך",
     },
     5: {
       id: 5,
-      name: "Unusual Building Permit",
-      description: "you can build a business on available tile",
+      name: "היתר בנייה חריגה",
+      description: "אתה יכול להקים עסק על כל משבצת פנויה",
     },
     6: {
       id: 6,
-      name: "Stock Market",
-      description: "you can buy or sell up to 3 stock on current rate",
+      name: "הבורסה",
+      description: "אתה יכול לקנות או למכור עד 3 מניות בשער הנוכחי",
     },
     7: {
       id: 7,
-      name: "Realization of assets",
+      name: "מימוש נכסים",
       description:
-        "sell your business to the bank get +500,000$ of the construction cost ",
+        "מכור את אחד העסקים שלך לקופה, קבל עבורו את מחיר העלות + 500,000₪",
     },
     8: {
       id: 8,
-      name: "Red header exemption",
-      description: "you dont need to pay on a red header tile",
+      name: "פתור מכותרת אדומה",
+      description: "אינך צריך לשלם במשבצת אדומה",
     },
     9: {
       id: 9,
-      name: "Discounted pass",
-      description: "get a discount of 2,000,000$ in new world fee",
+      name: "מעבר מוזל",
+      description: "קבל הנחה של 2,000,000₪ על מעבר לעיר אחרת",
     },
     10: {
       id: 10,
-      name: "Limousine",
+      name: "לימוזינה",
       description:
-        "move forward to every tile you choose, paying fee need to be payed! (Island is not inculed)",
+        "עבור לכל משבצת על הלוח מלבד האי, אינך פטור מתשלום דמי מעבר",
     },
     12: {
       id: 12,
-      name: "Gift Card",
-      description: "get 1,000,000$ from the bank",
+      name: "גיפט קארד",
+      description: "קבל 1,000,000₪ מהבנק",
     },
     13: {
       id: 13,
-      name: "Real Estate Profit",
-      description: "you made a good deal get 3,000,000$ from the bank",
+      name: "סטארט אפ",
+      description: "העסק שהקמת פרסם דוחות מעל המצופה, קבל 3,000,000₪ מהבנק",
     },
     14: {
       id: 14,
-      name: "Collecting Profits",
+      name: "איסוף רווחים",
       description:
-        "choose the player with the highest collect profits and get them",
+        "קבל את איסוף הרווחים הכי גבוהה מבין המשתתפים",
     },
     15: {
       id: 15,
-      name: "Collecting Profits",
+      name: "איסוף רווחים",
       description:
-        "choose the player with the highest collect profits and get them",
+        "קבל את איסוף הרווחים הכי גבוהה מבין המשתתפים",
     },
     16: {
       id: 16,
-      name: "Collecting Profits",
+      name: "איסוף רווחים",
       description:
-        "choose the player with the highest collect profits and get them",
+        "קבל את איסוף הרווחים הכי גבוהה מבין המשתתפים",
     },
     17: {
       id: 17,
-      name: "Free Pass",
-      description: "you dont need to pay the player business rent",
+      name: "התחמקות מתשלום",
+      description: "אינך צריך לשלם שכירות לעסק שעליו אתה עומד",
     },
     18: {
       id: 18,
-      name: "Free Pass",
-      description: "you dont need to pay the player business rent",
+      name: "התחמקות מתשלום",
+      description: "אינך צריך לשלם שכירות לעסק שעליו אתה עומד",
     },
     19: {
       id: 19,
-      name: "Free Pass",
-      description: "you dont need to pay the player business rent",
+      name: "התחמקות מתשלום",
+      description: "אינך צריך לשלם שכירות לעסק שעליו אתה עומד",
     },
     20: {
       id: 20,
-      name: "Stock Options",
-      description: "you can buy up to 2 stocks for half the price",
+      name: "אופציות",
+      description: "קנה עד 2 מניות בחצי ממחיר השוק",
     },
     21: {
       id: 21,
-      name: "Bonus",
-      description: "get your the rent on your most profitable business",
+      name: "שכירות מתנה",
+      description: "קבל את השכירות מהעסק הכי רווחי שלך",
     },
     22: {
       id: 22,
-      name: "Bonus",
-      description: "get your the rent on your most profitable business",
+      name: "שכירות מתנה",
+      description: "קבל את השכירות מהעסק הכי רווחי שלך",
     },
     23: {
       id: 23,
-      name: "Unusual Building Permit",
-      description: "you can build a business on available tile",
+      name: "היתר בנייה חריגה",
+      description: "אתה יכול להקים עסק על כל משבצת פנויה",
     },
     24: {
       id: 24,
-      name: "Unusual Building Permit",
-      description: "you can build a business on available tile",
+      name: "היתר בנייה חריגה",
+      description: "אתה יכול להקים עסק על כל משבצת פנויה",
     },
     25: {
       id: 25,
-      name: "Bonus",
-      description: "get your the rent on your most profitable business",
+      name: "שכירות מתנה",
+      description: "קבל את השכירות מהעסק הכי רווחי שלך",
     },
     26: {
       id: 26,
-      name: "Stock Market",
-      description: "you can buy or sell up to 3 stock on current rate",
+      name: "הבורסה",
+      description: "אתה יכול לקנות או למכור עד 3 מניות בשער הנוכחי",
     },
     27: {
       id: 27,
-      name: "Realization of assets",
+      name: "מימוש נכסים",
       description:
-        "sell your business to the bank get +500,000$ of the construction cost ",
+        "מכור עסק שבבעלותך קבל מהבנק +500,000₪ ממחיר העלות",
     },
     28: {
       id: 28,
-      name: "Realization of assets",
+      name: "מימוש נכסים",
       description:
-        "sell your business to the bank get +500,000$ of the construction cost ",
+        "מכור עסק שבבעלותך קבל מהבנק +500,000₪ ממחיר העלות",
     },
     29: {
       id: 29,
-      name: "Red header exemption",
-      description: "you dont need to pay on a red header tile",
+      name: "פתור מכותרת אדומה",
+      description: "אינך צריך לשלם במשבצת אדומה",
     },
     31: {
       id: 31,
-      name: "Gift Card",
-      description: "get 1,000,000$ from the bank",
+      name: "גיפט קארד",
+      description: "קבל 1,000,000₪ מהבנק",
     },
     32: {
       id: 32,
-      name: "Gift Card",
-      description: "get 1,000,000$ from the bank",
+      name: "גיפט קארד",
+      description: "קבל 1,000,000₪ מהבנק",
     },
     33: {
       id: 33,
-      name: "Gift Card",
-      description: "get 1,000,000$ from the bank",
+      name: "גיפט קארד",
+      description: "קבל 1,000,000₪ מהבנק",
     },
     34: {
       id: 34,
-      name: "Real Estate Profit",
-      description: "you made a good deal get 3,000,000$ from the bank",
+      name: "סטארט אפ",
+      description: "העסק שהקמת פרסם דוחות מעל המצופה, קבל 3,000,000₪ מהבנק",
     },
   };
 
@@ -646,37 +647,37 @@ const PlayerForm = ({ onStartGame }) => {
     1: {
       name: "DoubleExpanse",
       stockPrice: 400000,
-      description: "you need to pay double when land on red line tile",
+      description: "תשלום בכותרת אדומה הוא כפול",
     },
     2: {
       name: "1.5ProfitOnCollect",
       stockPrice: 1800000,
-      description: "get 150% on collect tile",
+      description: "קבל 150% על איסוף רווחים",
     },
     3: {
       name: "0.5CostAndProfit",
       stockPrice: 600000,
-      description: "bussiness and rent are now 50%",
+      description: "עלות הקמת עסקים והשכירות הם חצי מחיר",
     },
     4: {
       name: "ClosedGates",
       stockPrice: 1200000,
-      description: "players cannot move between worlds",
+      description: "לא ניתן לעבור מעיר לעיר, מלבד קלף לימוזינה",
     },
     5: {
       name: "OverMillionBussinessX2",
       stockPrice: 1400000,
-      description: "bussiness that cost over 1,000,000$ gets double rent",
+      description: "עסקים שעלות הקמתם היא 1,000,000₪ ומעלה מקבלים שכירות כפולה",
     },
     6: {
       name: "PassingX2",
       stockPrice: 2000000,
-      description: "moving FEE between worlds cost double",
+      description: "דמי המעבר בין עיר לעיר כפולים",
     },
     7: {
       name: "CheapGate-1M",
       stockPrice: 1000000,
-      description: "moving FEE between worlds is now 1,000,000$ cheaper!",
+      description: "דמי המעבר כעת זולים ב1,000,000₪",
     },
   };
 
@@ -688,10 +689,42 @@ const PlayerForm = ({ onStartGame }) => {
     setIsNewGame(false);
   };
 
-  let limousineAvailable = false;
-
   const storeIfLimousine = (limousineAvailable) => {
     localStorage.setItem("IfLimousine", JSON.stringify(limousineAvailable));
+  };
+
+  const saveCurrentMarketStateToLocalStorage = (currentMarketState) => {
+    localStorage.setItem(
+      "currentMarketState",
+      JSON.stringify(currentMarketState)
+    );
+  };
+
+  const storePlayerIndexInLocalStorage = (pla) => {
+    localStorage.setItem("playerIndex", JSON.stringify(pla));
+  };
+
+  const storePlayerDataInLocalStorage = (players) => {
+    const playerDataToStore = JSON.stringify(players);
+    localStorage.setItem("playerData", playerDataToStore);
+  };
+
+  const storeMarketStateInLocalStorage = () => {
+    const marketStateToStore = JSON.stringify(marketState);
+    localStorage.setItem("marketState", marketStateToStore);
+  };
+
+  const storeTilesDataInLocalStorage = () => {
+    const tilesDataToStore = JSON.stringify(tilesP);
+    localStorage.setItem("tilePositions", tilesDataToStore);
+  };
+
+  const storeActionCards = (actionCards) => {
+    localStorage.setItem("actionCards", JSON.stringify(actionCards));
+  };
+
+  const storeAnotherTurnInLocalStorage = (anotherTurn) => {
+    localStorage.setItem("anotherTurn", JSON.stringify(anotherTurn));
   };
 
   const getRandomCard = () => {
@@ -724,9 +757,6 @@ const PlayerForm = ({ onStartGame }) => {
     return card;
   };
 
-  const storePlayerIndexInLocalStorage = (pla) => {
-    localStorage.setItem("playerIndex", JSON.stringify(pla));
-  };
 
   const handleNumPlayersChange = (event) => {
     let num_of_players = parseInt(event.target.value);
@@ -741,7 +771,6 @@ const PlayerForm = ({ onStartGame }) => {
   const handlePlayerNameChange = (event, index) => {
     const updatedPlayers = [...players];
     let newName = event.target.value;
-
     newName = newName.charAt(0).toUpperCase() + newName.slice(1);
 
     const isDuplicate = updatedPlayers.some(
@@ -749,7 +778,7 @@ const PlayerForm = ({ onStartGame }) => {
     );
 
     if (isDuplicate) {
-      setError("Player name needs to be different");
+      setError("שמות השחקנים צריכים להיות שונים");
     } else {
       setError("");
       // Use the nextPlayerId as the player's ID
@@ -860,59 +889,11 @@ const PlayerForm = ({ onStartGame }) => {
     return initialPlayerOrder;
   };
 
-  const validateInput = () => {
-    let ret = true;
-    if (players.length !== numPlayers) {
-      return false;
-    }
-    players.forEach((player) => {
-      if (player.color === undefined) {
-        ret = false;
-        setError("Choose a color");
-      }
-      if (player.name === undefined) {
-        ret = false;
-        setError("Choose a name");
-      }
-    });
-    return ret;
-  };
-
   const getRandomMarketState = () => {
     const keys = Object.keys(marketState);
     const randomKey = keys[Math.floor(Math.random() * keys.length)];
     console.log(marketState[randomKey]);
     return marketState[randomKey];
-  };
-
-  const saveCurrentMarketStateToLocalStorage = (currentMarketState) => {
-    localStorage.setItem(
-      "currentMarketState",
-      JSON.stringify(currentMarketState)
-    );
-  };
-
-  const storePlayerDataInLocalStorage = (players) => {
-    const playerDataToStore = JSON.stringify(players);
-    localStorage.setItem("playerData", playerDataToStore);
-  };
-
-  const storeMarketStateInLocalStorage = () => {
-    const marketStateToStore = JSON.stringify(marketState);
-    localStorage.setItem("marketState", marketStateToStore);
-  };
-
-  const storeTilesDataInLocalStorage = () => {
-    const tilesDataToStore = JSON.stringify(tilesP);
-    localStorage.setItem("tilePositions", tilesDataToStore);
-  };
-
-  const storeActionCards = (actionCards) => {
-    localStorage.setItem("actionCards", JSON.stringify(actionCards));
-  };
-
-  const storeAnotherTurnInLocalStorage = (anotherTurn) => {
-    localStorage.setItem("anotherTurn", JSON.stringify(anotherTurn));
   };
 
   const handleStartGame = () => {
@@ -954,6 +935,24 @@ const PlayerForm = ({ onStartGame }) => {
     onStartGame(players, tiles);
   };
 
+  const validateInput = () => {
+    let ret = true;
+    if (players.length !== numPlayers) {
+      return false;
+    }
+    players.forEach((player) => {
+      if (player.color === undefined) {
+        ret = false;
+        setError("אנא בחר צבע");
+      }
+      if (player.name === undefined) {
+        ret = false;
+        setError("אנא בחר שם");
+      }
+    });
+    return ret;
+  };
+
   const renderPlayerInputs = () => {
     const playerInputs = [];
 
@@ -964,7 +963,7 @@ const PlayerForm = ({ onStartGame }) => {
         <div className="player-input" key={i}>
           <input
             type="text"
-            placeholder={`Player ${i + 1} name`}
+            placeholder={`הכנס שם ${i + 1} `}
             value={players[i] ? players[i].name : ""}
             onChange={(e) => handlePlayerNameChange(e, i)}
           />
@@ -994,10 +993,10 @@ const PlayerForm = ({ onStartGame }) => {
   return (
     <div className="start-game-button">
       <button onClick={openNewGame} className="confirm-button">
-        NEW GAME
+        משחק חדש
       </button>
       <button onClick={handleResumeGame} className="confirm-button">
-        Resume Game
+        המשך משחק
       </button>
       <Modal
         isOpen={isNewGame}
@@ -1005,7 +1004,7 @@ const PlayerForm = ({ onStartGame }) => {
         contentLabel="How Many Players"
       >
         <div className="modal-content">
-          <h1>How many players?</h1>
+          <h1>אנא בחר כמות משתתפים</h1>
           <div className="number-selector">
             <select value={numPlayers} onChange={handleNumPlayersChange}>
               <option value={2}>2</option>
@@ -1015,7 +1014,7 @@ const PlayerForm = ({ onStartGame }) => {
           </div>
           {renderPlayerInputs()}
           <button onClick={handleStartGame} className="confirm-button">
-            Confirm
+            אישור
           </button>
         </div>
       </Modal>
