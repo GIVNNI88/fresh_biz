@@ -57,6 +57,8 @@ class Board extends Component {
       cardId: 0,
       logs: [],
       availableTiles: [],
+      boughtStock: false,
+      boughtBusiness: false,
     };
 
     this.logsRef = React.createRef();
@@ -671,7 +673,12 @@ class Board extends Component {
       if (totalFees * Profit === 0) {
         console.log(playerData[pla].name, "אין בבעלותך עסקים, אינך מקבל כסף");
       } else {
-        console.log(playerData[pla].name, " קיבל ", totalFees * Profit, "₪");
+        console.log(
+          playerData[pla].name,
+          " קיבל ",
+          Number(totalFees * Profit).toLocaleString(),
+          "₪"
+        );
       }
     } else if (
       currentTile.ID === 94 ||
@@ -705,7 +712,12 @@ class Board extends Component {
       Fee = 1000000 * DoubleExpanse;
       if (playerData[pla].currentMoney - Fee >= 0) {
         playerData[pla].currentMoney -= Fee;
-        console.log(playerData[pla].name, "שילם", Fee, "₪ לבנק");
+        console.log(
+          playerData[pla].name,
+          "שילם",
+          Number(Fee).toLocaleString(),
+          "₪ לבנק"
+        );
       } else {
         this.removePlayer(playerData, pla);
       }
@@ -713,7 +725,12 @@ class Board extends Component {
       Fee = 2000000 * DoubleExpanse;
       if (playerData[pla].currentMoney - Fee >= 0) {
         playerData[pla].currentMoney -= Fee;
-        console.log(playerData[pla].name, "שילם", Fee, "₪ לבנק");
+        console.log(
+          playerData[pla].name,
+          "שילם",
+          Number(Fee).toLocaleString(),
+          "₪ לבנק"
+        );
       } else {
         this.removePlayer(playerData, pla);
       }
@@ -735,7 +752,13 @@ class Board extends Component {
       } else {
         if (playerData[pla].currentMoney - totalFees >= 0) {
           playerData[pla].currentMoney -= totalFees;
-          console.log(playerData[pla].name, "שילם", totalFees, "₪ לבנק");
+
+          console.log(
+            playerData[pla].name,
+            "שילם",
+            Number(totalFees).toLocaleString(),
+            "₪ לבנק"
+          );
         } else {
           this.removePlayer(playerData, pla);
         }
@@ -768,7 +791,7 @@ class Board extends Component {
       (player) => player.id === playerIdToRemove
     );
     if (removedPlayer) {
-      console.log(`${removedPlayer.name} הפסיד במשחק`);
+      console.log(`${removedPlayer.name} נגמר לך הכסף ולכן הפסדת`);
       this.setState({ showPlayerLoseModal: true });
     }
 
@@ -912,7 +935,14 @@ class Board extends Component {
             if (ownerIndex !== -1) {
               playerData[ownerIndex] = owner;
             }
-            console.log(currentPlayer.name, "שילם", rent, "₪ ל", owner.name);
+
+            console.log(
+              currentPlayer.name,
+              "שילם",
+              Number(rent).toLocaleString(),
+              "₪ ל",
+              owner.name
+            );
           } else {
             // Handle the case where the player can't afford to pay the rent
             this.removePlayer(playerData, pla);
@@ -928,7 +958,12 @@ class Board extends Component {
           if (currentPlayerIndex !== -1) {
             playerData[currentPlayerIndex] = playerData[pla];
           }
-          console.log(currentPlayer.name, "קיבל", rent, "₪ משכירות");
+          console.log(
+            currentPlayer.name,
+            "קיבל",
+            Number(rent).toLocaleString(),
+            "₪ משכירות"
+          );
         }
         this.savePlayerDataToLocalStorage(playerData);
       }
@@ -996,7 +1031,7 @@ class Board extends Component {
         "השתמש ב",
         cardName,
         "ואסף רווחים בשווי",
-        highestProfit,
+        Number(highestProfit).toLocaleString(),
         "₪"
       );
       cardDid = true;
@@ -1018,7 +1053,7 @@ class Board extends Component {
           "השתמש ב",
           cardName,
           "ואסף רווח בשווי",
-          highestProfit,
+          Number(highestProfit).toLocaleString(),
           "₪"
         );
         cardDid = true;
@@ -1366,7 +1401,7 @@ class Board extends Component {
       console.log(
         playerDataLS[playerIndexLS].name,
         "שילם",
-        paymentAmount,
+        Number(paymentAmount).toLocaleString(),
         "₪ לעבור לעיר הבאה"
       );
       this.savePlayerDataToLocalStorage(updatedPlayers);
@@ -1415,7 +1450,7 @@ class Board extends Component {
       console.log(
         playerDataLS[playerIndexLS].name,
         "שילם",
-        paymentAmount,
+        Number(paymentAmount).toLocaleString(),
         "₪ לעבור לאי"
       );
       this.savePlayerDataToLocalStorage(playerDataLS);
@@ -1463,7 +1498,7 @@ class Board extends Component {
       console.log(
         playerDataLS[playerIndexLS].name,
         "שילם",
-        paymentAmount,
+        Number(paymentAmount).toLocaleString(),
         "₪ לעבור לעיר הבאה"
       );
       this.savePlayerDataToLocalStorage(playerDataLS);
@@ -1535,7 +1570,7 @@ class Board extends Component {
         });
       }
     }
-    if (availableTiles.length>0) {
+    if (availableTiles.length > 0) {
       this.setState({
         showSellBusinessModal: true,
         availableTiles: availableTiles,
@@ -1543,7 +1578,6 @@ class Board extends Component {
     } else {
       console.log("אין בבעלותך עסקים למכור");
     }
-
   };
 
   handleSellBusiness = () => {
@@ -1584,7 +1618,12 @@ class Board extends Component {
     // Close the modal after buying
     this.setState({ showSellBusinessModal: false });
 
-    console.log(playerDataLS[playerIndexLS].name, "מכר עסק במחיר", price, "₪");
+    console.log(
+      playerDataLS[playerIndexLS].name,
+      "מכר עסק במחיר",
+      Number(price).toLocaleString(),
+      "₪"
+    );
 
     this.players.forEach((player) => {
       player.hasLanded = false;
@@ -1745,9 +1784,9 @@ class Board extends Component {
       console.log(
         playerDataLS[playerIndexLS].name,
         "קנה עסק ב",
-        cost,
+        Number(cost).toLocaleString(),
         "₪ השכירות היא:",
-        currentTile.payFee,
+        Number(currentTile.payFee).toLocaleString(),
         "₪"
       );
 
@@ -1838,10 +1877,10 @@ class Board extends Component {
       tilePositions[currentPlayer.location].payFee = whenLanded;
       console.log(
         playerDataLS[playerIndexLS].name,
-      "קנה עסק ב",  
-        cost,
+        "קנה עסק ב",
+        Number(cost).toLocaleString(),
         "₪ השכירות היא:",
-        currentTile.payFee,
+        Number(currentTile.payFee).toLocaleString(),
         "₪"
       );
       canBuy = false;
@@ -1978,30 +2017,37 @@ class Board extends Component {
     const playerDataLS = this.getPlayerData();
     const currentPlayer = playerDataLS[playerIndexLS];
     let cardDid;
-    if (selectedStocks > 0) {
-      if (playerDataLS[playerIndexLS].stocks < selectedStocks) {
-        console.log("אינך יכול למכור עוד מניות");
-      } else {
-        playerDataLS[playerIndexLS].currentMoney +=
-          selectedStocks * this.currentMarketState.stockPrice;
-        playerDataLS[playerIndexLS].stocks -= selectedStocks;
-        cardDid = true;
-        this.removeCardAfterUse(
-          playerDataLS,
-          playerIndexLS,
-          this.state.cardId,
-          cardDid
-        );
-        this.savePlayerDataToLocalStorage(playerDataLS);
-        this.setState({
-          showSellStocksModal: false,
-          showStockCardModal: false,
-        });
-        console.log(currentPlayer.name, "מכר", selectedStocks, "מניות");
-      }
+    if (playerDataLS[playerIndexLS].stocks === 0) {
+      console.log(playerDataLS[playerIndexLS].name, "אין לך מניות למכור");
+      this.setState({
+        showReturnLoanModal: false,
+      });
     } else {
-      // Provide feedback or prevent the user from attempting to purchase more than 2 stocks
-      console.log("אפשר למכור בין 1-2 מניות בלבד");
+      if (selectedStocks > 0) {
+        if (playerDataLS[playerIndexLS].stocks < selectedStocks) {
+          console.log("אינך יכול למכור עוד מניות");
+        } else {
+          playerDataLS[playerIndexLS].currentMoney +=
+            selectedStocks * this.currentMarketState.stockPrice;
+          playerDataLS[playerIndexLS].stocks -= selectedStocks;
+          cardDid = true;
+          this.removeCardAfterUse(
+            playerDataLS,
+            playerIndexLS,
+            this.state.cardId,
+            cardDid
+          );
+          this.savePlayerDataToLocalStorage(playerDataLS);
+          this.setState({
+            showSellStocksModal: false,
+            showStockCardModal: false,
+          });
+          console.log(currentPlayer.name, "מכר", selectedStocks, "מניות");
+        }
+      } else {
+        // Provide feedback or prevent the user from attempting to purchase more than 2 stocks
+        console.log("אפשר למכור בין 1-2 מניות בלבד");
+      }
     }
   };
 
@@ -2073,22 +2119,29 @@ class Board extends Component {
   handleReturnLoan = () => {
     const playerIndexLS = this.getPlayerIndex();
     const playerDataLS = this.getPlayerData();
-    if (
-      playerDataLS[playerIndexLS].currentMoney >= 1000000 &&
-      playerDataLS[playerIndexLS].loans !== 0
-    ) {
-      playerDataLS[playerIndexLS].currentMoney -= 1000000;
-      playerDataLS[playerIndexLS].loans -= 1;
-      console.log(playerDataLS[playerIndexLS].name, "החזיר הלואוה");
+    if (playerDataLS[playerIndexLS].loans === 0) {
+      console.log(playerDataLS[playerIndexLS].name, "אין לך הלוואות להחזיר");
       this.setState({
         showReturnLoanModal: false,
       });
-      this.savePlayerDataToLocalStorage(playerDataLS);
     } else {
-      console.log(
-        playerDataLS[playerIndexLS].name,
-        "אינך יכול להחזיר הלוואה, אין לך מספיק כסף"
-      );
+      if (
+        playerDataLS[playerIndexLS].currentMoney >= 1000000 &&
+        playerDataLS[playerIndexLS].loans !== 0
+      ) {
+        playerDataLS[playerIndexLS].currentMoney -= 1000000;
+        playerDataLS[playerIndexLS].loans -= 1;
+        console.log(playerDataLS[playerIndexLS].name, "החזיר הלואוה");
+        this.setState({
+          showReturnLoanModal: false,
+        });
+        this.savePlayerDataToLocalStorage(playerDataLS);
+      } else {
+        console.log(
+          playerDataLS[playerIndexLS].name,
+          "אינך יכול להחזיר הלוואה, אין לך מספיק כסף"
+        );
+      }
     }
   };
 
@@ -2192,7 +2245,10 @@ class Board extends Component {
           <div className="playerStats">
             <h1>נתונים</h1>
             <p>שם השחקן : {currentPlayer.name} </p>
-            <p>מאזן נוכחי : {currentPlayer.currentMoney}₪</p>
+            <p>
+              מאזן נוכחי : {Number(currentPlayer.currentMoney).toLocaleString()}
+              ₪
+            </p>
             <p>מספר הלוואות : {currentPlayer.loans}</p>
             <p>מספר מניות : {currentPlayer.stocks}</p>
             <p>מספר קלפים : {currentPlayer.card.length}</p>
@@ -2231,7 +2287,8 @@ class Board extends Component {
                         </span>
                         <br />
                         <br />
-                        מאזן נוכחי: {player.currentMoney}$
+                        מאזן נוכחי:{" "}
+                        {Number(player.currentMoney).toLocaleString()}₪
                         <br />
                         קלפים: {player.card.length}
                         <br />
@@ -2253,8 +2310,11 @@ class Board extends Component {
           overlayClassName="overlay"
         >
           <div className="modal-content">
-            <h1>:חוקים</h1>
-            <br />
+            <img
+              src="/img/rules.png"
+              style={{ borderRadius: "8px" }}
+              alt="Dice"
+            />
             {this.state.showRulesModal && <div></div>}
           </div>
         </Modal>
@@ -2403,7 +2463,7 @@ class Board extends Component {
                   className="dontPayButton"
                   onClick={this.handleNotBuyBusiness}
                 >
-                  ביטוך
+                  ביטול
                 </button>
               </div>
             </div>
@@ -2695,7 +2755,14 @@ class Board extends Component {
           {this.state.showPlayerCardsModal && (
             <div
               className="modal-content"
-              style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}
+              style={{
+                display: "grid",
+                gridAutoFlow: "column",
+                gridTemplateRows:
+                  currentPlayer.card.length === 1
+                    ? "1fr"
+                    : "repeat(auto-fit, minmax(1fr, max-content))",
+              }}
             >
               {currentPlayer.card.length > 0 ? (
                 currentPlayer.card.map((card, index) => (

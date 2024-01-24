@@ -727,6 +727,10 @@ const PlayerForm = ({ onStartGame }) => {
     localStorage.setItem("anotherTurn", JSON.stringify(anotherTurn));
   };
 
+  const getPlayerData = () => {
+    return JSON.parse(localStorage.getItem("playerData"));
+  };
+
   const getRandomCard = () => {
     const keys = Object.keys(actionCards);
     const randomKey = keys[Math.floor(Math.random() * keys.length)];
@@ -995,9 +999,15 @@ const PlayerForm = ({ onStartGame }) => {
       <button onClick={openNewGame} className="confirm-button">
         משחק חדש
       </button>
-      <button onClick={handleResumeGame} className="confirm-button">
-        המשך משחק
-      </button>
+      <>
+      {getPlayerData() ? (
+        <button onClick={handleResumeGame} className="confirm-button">
+          המשך משחק
+        </button>
+      ) : (
+        null // or render an alternative UI
+      )}
+    </>
       <Modal
         isOpen={isNewGame}
         onRequestClose={closeNewGame}
